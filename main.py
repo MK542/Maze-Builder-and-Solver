@@ -176,8 +176,7 @@ def Dijkstra(grid, start, target):
             break
 
         neighbours = []
-        #    neighbours = findNeighbours(grid, u)
-        neighbours = TheBetterFindNeighbours(graph, u)
+        neighbours = theBetterFindNeighbours(graph, u)
 
         for v in neighbours:
             alternatePath = dist[u] + distBetween(u, v);
@@ -265,7 +264,7 @@ def neighboursBlue(grid, V):
     return flag
 
 
-def TheBetterFindNeighbours(graph, u):
+def theBetterFindNeighbours(graph, u):
     neighbours = []
     if (u[0] - squareSize, u[1] - squareSize) in graph:
         neighbours.append((u[0] - squareSize, u[1] - squareSize));  ##top left
@@ -286,33 +285,8 @@ def TheBetterFindNeighbours(graph, u):
 
     return neighbours
 
-
-def findNeighbours(grid, u):  ##consider walls here
-    neighbours = []
-    if ((u[0] >= squareSize) and (u[1] >= squareSize)
-            and ((grid.get_at((u[0] - int(squareSize / 2), u[1] - int(squareSize / 2))))[:3] != (0, 0, 0))):
-        neighbours.append((u[0] - squareSize, u[1] - squareSize));  ##top left
-    if (u[1] >= squareSize) and ((grid.get_at((u[0], u[1] - int(squareSize / 2))))[:3] != (0, 0, 0)):
-        neighbours.append((u[0], u[1] - squareSize));  ##top
-    if ((u[0] <= (boardWidth - 2 * squareSize)) and (u[1] >= squareSize)
-            and ((grid.get_at((u[0] + int(squareSize / 2), u[1] - int(squareSize / 2))))[:3] != (0, 0, 0))):
-        neighbours.append((u[0] + squareSize, u[1] - squareSize));  ##top right
-    if u[0] >= squareSize and ((grid.get_at((u[0] - int(squareSize / 2), u[1])))[:3] != (0, 0, 0)):
-        neighbours.append((u[0] - squareSize, u[1]));  ##left
-    if (u[0] <= (boardWidth - 2 * squareSize)) \
-            and ((grid.get_at((u[0] + int(squareSize / 2), u[1])))[:3] != (0, 0, 0)):
-        neighbours.append((u[0] + squareSize, u[1]));  ##right
-    if ((u[0] >= squareSize) and (u[1] <= (boardHeight - 2 * squareSize))) \
-            and ((grid.get_at((u[0] - int(squareSize / 2), u[1] + int(squareSize / 2))))[:3] != (0, 0, 0)):
-        neighbours.append((u[0] - squareSize, u[1] + squareSize))  ##bottom left
-    if (u[1] <= (boardHeight - 2 * squareSize)) \
-            and ((grid.get_at((u[0], u[1] + int(squareSize / 2))))[:3] != (0, 0, 0)):
-        neighbours.append((u[0], u[1] + squareSize));  ##bottom
-    if ((u[0] <= (boardWidth - 2 * squareSize)) and (u[1] <= (boardHeight - 2 * squareSize))) \
-            and ((grid.get_at((u[0] + int(squareSize / 2), u[1] + int(squareSize / 2))))[:3] != (0, 0, 0)):
-        neighbours.append((u[0] + squareSize, u[1] + squareSize));  ##bottom right
-
-    return neighbours
+def aStar():
+    pass
 
 
 def erase(cursor_pos, board):
