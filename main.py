@@ -43,8 +43,10 @@ def update():
         instructions1 = instructionsFont.render("To change modes press 'Space'.",
                                                True, black, white)
         instructions2 = instructionsFont.render("Mode 0: Wall    Mode 1: Source    Mode 2: Target", True, black, white)
+        instructions3 = instructionsFont.render("'G': Dijkstra", True, black, white)
         board_window.blit(instructions1, (boardWidth + 20, 200))
         board_window.blit(instructions2, (boardWidth+20, 223))
+        board_window.blit(instructions3, (boardWidth+20, 246))
         board_window.blit(modeText, (boardWidth + 20, 0))
         solText = mainFont.render("The solution is " + str(len(pathList)) + " squares long", True, black, white)
         if len(pathList) != 0:
@@ -73,6 +75,11 @@ def update():
                         pygame.display.flip()
                         pygame.time.wait(200)
 
+                    ##  Have it start running here.  Also have a button on GUI to start it
+                    ##  Try and have a menu on left side with the grid part on the right
+        ##       if event.key == pygame.K_c:
+        ##          create();
+        ##create a random maze of dots (first just make it random, then focus on being solvable)
         if pygame.mouse.get_pressed()[0]:  ##create a wall
             print("LMB pressed");
             cursor_pos = pygame.mouse.get_pos();
@@ -116,6 +123,10 @@ def create_end_pt(cursor_pos, board):
     squareY = squareSize * math.floor(cursor_pos[1] / squareSize);
     pygame.draw.rect(board, end_colour, pygame.Rect(squareX, squareY, squareSize, squareSize));
     return (squareX, squareY)
+
+
+##def begin():
+# start the A* thing here
 
 def Dijkstra(grid, start, target):
     # Implement dijkstra's algo here
@@ -165,10 +176,15 @@ def Dijkstra(grid, start, target):
             break
 
         neighbours = []
+        #    neighbours = findNeighbours(grid, u)
         neighbours = TheBetterFindNeighbours(graph, u)
 
         for v in neighbours:
             alternatePath = dist[u] + distBetween(u, v);
+            # print("alternate path: ", alternatePath)
+            # print("v", v)
+            # print("dist", dist)
+            # print("dist[v]", dist[v])
             if alternatePath < dist[v]:
                 dist[v] = alternatePath;
                 prev[v] = u;
@@ -269,6 +285,36 @@ def TheBetterFindNeighbours(graph, u):
         neighbours.append((u[0] + squareSize, u[1] + squareSize));  ##bottom right
 
     return neighbours
+
+
+def findNeighbours(grid, u):  ##consider walls here
+    neighbours = []
+    if ((u[0] >= squareSize) and (u[1] >= squareSize)
+            and ((grid.get_at((u[0] - int(squareSize / 2), u[1] - int(squareSize / 2))))[:3] != (0, 0, 0))):
+        neighbours.append((u[0] - squareSize, u[1] - squareSize));  ##top left
+    if (u[1] >= squareSize) and ((grid.get_at((u[0], u[1] - int(squareSize / 2))))[:3] != (0, 0, 0)):
+        neighbours.append((u[0], u[1] - squareSize));  ##top
+    if ((u[0] <= (boardWidth - 2 * squareSize)) and (u[1] >= squareSize)
+            and ((grid.get_at((u[0] + int(squareSize / 2), u[1] - int(squareSize / 2))))[:3] != (0, 0, 0))):
+        neighbours.append((u[0] + squareSize, u[1] - squareSize));  ##top right
+    if u[0] >= squareSize and ((grid.get_at((u[0] - int(squareSize / 2), u[1])))[:3] != (0, 0, 0)):
+        neighbours.append((u[0] - squareSize, u[1]));  ##left
+    if (u[0] <= (boardWidth - 2 * squareSize)) \
+            and ((grid.get_at((u[0] + int(squareSize / 2), u[1])))[:3] != (0, 0, 0)):
+        neighbours.append((u[0] + squareSize, u[1]));  ##right
+    if ((u[0] >= squareSize) and (u[1] <= (boardHeight - 2 * squareSize))) \
+            and ((grid.get_at((u[0] - int(squareSize / 2), u[1] + int(squareSize / 2))))[:3] != (0, 0, 0)):
+        neighbours.append((u[0] - squareSize, u[1] + squareSize))  ##bottom left
+    if (u[1] <= (boardHeight - 2 * squareSize)) \
+            and ((grid.get_at((u[0], u[1] + int(squareSize / 2))))[:3] != (0, 0, 0)):
+        neighbours.append((u[0], u[1] + squareSize));  ##bottom
+    if ((u[0] <= (boardWidth - 2 * squareSize)) and (u[1] <= (boardHeight - 2 * squareSize))) \
+            and ((grid.get_at((u[0] + int(squareSize / 2), u[1] + int(squareSize / 2))))[:3] != (0, 0, 0)):
+        neighbours.append((u[0] + squareSize, u[1] + squareSize));  ##bottom right
+
+    return neighbours
+
+
 def erase(cursor_pos, board):
     squareX = squareSize * math.floor(cursor_pos[0] / squareSize);
     squareY = squareSize * math.floor(cursor_pos[1] / squareSize);
