@@ -10,7 +10,7 @@ menuWidth = 400
 white = (255, 255, 255)
 black = (0, 0, 0)
 start_colour = (0, 0, 255)
-end_colour = (38, 215, 1)
+endColour = (38, 215, 1)
 searching_colour = (3, 252, 240)
 path_colour = (255, 162, 0)
 searchDelay = 200
@@ -27,14 +27,14 @@ def drawBoard(totalX, totalY, squareSize, menuWidth):
             pygame.draw.lines(board, (95, 0, 0), False, [(i * squareSize, j * squareSize),
                                                          (i * squareSize + squareSize, j * squareSize),
                                                          (i * squareSize + squareSize, j * squareSize + squareSize),
-                                                         (i * squareSize, j * squareSize + squareSize)]);
+                                                         (i * squareSize, j * squareSize + squareSize)])
     return board
 
 
 def update():
-    board_window = drawBoard(boardWidth, boardHeight, squareSize, menuWidth);
-    running = True;
-    mode = 0;
+    boardWindow = drawBoard(boardWidth, boardHeight, squareSize, menuWidth)
+    running = True
+    mode = 0
     pathList = []
     while running:
         modeText = mainFont.render("Mode: " + str(mode),
@@ -44,84 +44,94 @@ def update():
                                                True, black, white)
         instructions2 = instructionsFont.render("Mode 0: Wall    Mode 1: Source    Mode 2: Target", True, black, white)
         instructions3 = instructionsFont.render("'G': Dijkstra", True, black, white)
-        board_window.blit(instructions1, (boardWidth + 20, 200))
-        board_window.blit(instructions2, (boardWidth+20, 223))
-        board_window.blit(instructions3, (boardWidth+20, 246))
-        board_window.blit(modeText, (boardWidth + 20, 0))
+        boardWindow.blit(instructions1, (boardWidth + 20, 200))
+        boardWindow.blit(instructions2, (boardWidth+20, 223))
+        boardWindow.blit(instructions3, (boardWidth+20, 246))
+        boardWindow.blit(modeText, (boardWidth + 20, 0))
         solText = mainFont.render("The solution is " + str(len(pathList)) + " squares long", True, black, white)
         if len(pathList) != 0:
-            board_window.blit(solText, (boardWidth + 20, 69))
+            boardWindow.blit(solText, (boardWidth + 20, 69))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False;
+                running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if mode == 2:
-                        mode = 0;
+                        mode = 0
                     else:
-                        mode += 1;
+                        mode += 1
                 if event.key == pygame.K_q:
-                    running = False;
+                    running = False
                 if event.key == pygame.K_g:
                     print("Source: ", source, "Target: ", target)
-                    pathList = Dijkstra(board_window, source, target);
+                    pathList = Dijkstra(boardWindow, source, target)
                     print("Path list:")
                     print(pathList)
                     for point in pathList:
                         squareX = point[0]
                         squareY = point[1]
-                        pygame.draw.rect(board_window, path_colour,
-                                         pygame.Rect(squareX, squareY, squareSize, squareSize));
+                        pygame.draw.rect(boardWindow, path_colour,
+                                         pygame.Rect(squareX, squareY, squareSize, squareSize))
                         pygame.display.flip()
                         pygame.time.wait(200)
-
-                    ##  Have it start running here.  Also have a button on GUI to start it
-                    ##  Try and have a menu on left side with the grid part on the right
-        ##       if event.key == pygame.K_c:
-        ##          create();
-        ##create a random maze of dots (first just make it random, then focus on being solvable)
-        if pygame.mouse.get_pressed()[0]:  ##create a wall
-            print("LMB pressed");
-            cursor_pos = pygame.mouse.get_pos();
-            print("Cursor_pos: " + str(cursor_pos));
+                if event.key == pygame.K_t:
+                    print("Source: ", source, "Target: ", target)
+                    pathList = aStar(boardWindow, source, target)
+                    print(pathList)
+                    for point in pathList:
+                        squareX = point[0]
+                        squareY = point[1]
+                        pygame.draw.rect(boardWindow, path_colour,
+                                         pygame.Rect(squareX, squareY, squareSize, squareSize))
+                        pygame.display.flip()
+                        pygame.time.wait(200)
+                    #  Have it start running here.  Also have a button on GUI to start it
+                    #  Try and have a menu on left side with the grid part on the right
+        #       if event.key == pygame.K_c:
+        #         create()
+        #create a random maze of dots (first just make it random, then focus on being solvable)
+        if pygame.mouse.get_pressed()[0]:  #create a wall
+            print("LMB pressed")
+            cursorPos = pygame.mouse.get_pos()
+            print("CursorPos: " + str(cursorPos))
             if mode == 0:
                 # create wall
-                create_wall(cursor_pos, board_window);
+                Create_wall(cursorPos, boardWindow)
             if mode == 1:
                 # create start pt
-                source = create_start_pt(cursor_pos, board_window);
+                source = Create_start_pt(cursorPos, boardWindow)
             if mode == 2:
                 # create end pt
-                target = create_end_pt(cursor_pos, board_window);
-        if pygame.mouse.get_pressed()[2]:  ##erase whatever is in that square
-            print("RMB pressed");
-            cursor_pos = pygame.mouse.get_pos();
-            print("Cursor_pos: " + str(cursor_pos));
-            erase(cursor_pos, board_window);
+                target = Create_end_pt(cursorPos, boardWindow)
+        if pygame.mouse.get_pressed()[2]:  #erase whatever is in that square
+            print("RMB pressed")
+            cursorPos = pygame.mouse.get_pos()
+            print("CursorPos: " + str(cursorPos))
+            erase(cursorPos, boardWindow)
         pygame.display.flip()
         clock.tick(30)
     while not running:
-        print("Not running");
-        quit();
+        print("Not running")
+        quit()
 
 
-def create_wall(cursor_pos, board):
-    squareX = squareSize * math.floor(cursor_pos[0] / squareSize);
-    squareY = squareSize * math.floor(cursor_pos[1] / squareSize);
-    pygame.draw.rect(board, black, pygame.Rect(squareX, squareY, squareSize, squareSize));
+def Create_wall(cursorPos, board):
+    squareX = squareSize * math.floor(cursorPos[0] / squareSize)
+    squareY = squareSize * math.floor(cursorPos[1] / squareSize)
+    pygame.draw.rect(board, black, pygame.Rect(squareX, squareY, squareSize, squareSize))
 
 
-def create_start_pt(cursor_pos, board):
-    squareX = squareSize * math.floor(cursor_pos[0] / squareSize);
-    squareY = squareSize * math.floor(cursor_pos[1] / squareSize);
-    pygame.draw.rect(board, start_colour, pygame.Rect(squareX, squareY, squareSize, squareSize));
+def Create_start_pt(cursorPos, board):
+    squareX = squareSize * math.floor(cursorPos[0] / squareSize)
+    squareY = squareSize * math.floor(cursorPos[1] / squareSize)
+    pygame.draw.rect(board, start_colour, pygame.Rect(squareX, squareY, squareSize, squareSize))
     return (squareX, squareY)
 
 
-def create_end_pt(cursor_pos, board):
-    squareX = squareSize * math.floor(cursor_pos[0] / squareSize);
-    squareY = squareSize * math.floor(cursor_pos[1] / squareSize);
-    pygame.draw.rect(board, end_colour, pygame.Rect(squareX, squareY, squareSize, squareSize));
+def Create_end_pt(cursorPos, board):
+    squareX = squareSize * math.floor(cursorPos[0] / squareSize)
+    squareY = squareSize * math.floor(cursorPos[1] / squareSize)
+    pygame.draw.rect(board, endColour, pygame.Rect(squareX, squareY, squareSize, squareSize))
     return (squareX, squareY)
 
 
@@ -137,21 +147,21 @@ def Dijkstra(grid, start, target):
     # textRect = text.get_rect()
     grid.blit(sourceCoordText, (boardWidth + 20, 23))
     grid.blit(targetCoordText, (boardWidth + 20, 46))
-    graph = [];
+    graph = []
     startTime = datetime.datetime.now()
     for i in range(0, boardWidth, squareSize):
         for j in range(0, boardHeight, squareSize):
             if (grid.get_at((i, j))[:3] != (0, 0, 0)):
                 graph.append((i, j))
 
-    queue = [];
-    dist = dict();
-    prev = dict();
+    queue = []
+    dist = dict()
+    prev = dict()
     for vertex in graph:
-        dist[vertex] = sys.maxsize;
-        prev[vertex] = None;
-        queue.append(vertex);
-    dist[start] = 0;
+        dist[vertex] = sys.maxsize
+        prev[vertex] = None
+        queue.append(vertex)
+    dist[start] = 0
 
     # just calculate order of nodes and then have minimum dist function just return next and remove from list
 
@@ -166,11 +176,11 @@ def Dijkstra(grid, start, target):
             print('Took to long / is impossible.  Ending program')
             break
 
-        pygame.draw.rect(grid, searching_colour, pygame.Rect(u[0], u[1], squareSize, squareSize));
+        pygame.draw.rect(grid, searching_colour, pygame.Rect(u[0], u[1], squareSize, squareSize))
         pygame.display.flip()
         pygame.time.wait(searchDelay)
 
-        queue.remove(u);
+        queue.remove(u)
 
         if u == target:
             break
@@ -179,23 +189,23 @@ def Dijkstra(grid, start, target):
         neighbours = theBetterFindNeighbours(graph, u)
 
         for v in neighbours:
-            alternatePath = dist[u] + distBetween(u, v);
+            alternatePath = dist[u] + distBetween(u, v)
             # print("alternate path: ", alternatePath)
             # print("v", v)
             # print("dist", dist)
             # print("dist[v]", dist[v])
             if alternatePath < dist[v]:
-                dist[v] = alternatePath;
-                prev[v] = u;
+                dist[v] = alternatePath
+                prev[v] = u
 
-    Traceback = [];
+    Traceback = []
     u = target
     if (prev[u] != None) or (u == start):
         while (u != None):
-            Traceback.insert(0, u);
-            u = prev[u];
+            Traceback.insert(0, u)
+            u = prev[u]
 
-    return Traceback;
+    return Traceback
 
 
 def distBetween(u, v):
@@ -217,7 +227,7 @@ def minimumDist(grid, Q, source):
         distX = vertex[0] - sourceX
         distY = vertex[1] - sourceY
         dist = float(math.sqrt(float(distX ** 2 + distY ** 2)))
-        if (dist < bestDist) and (neighboursBlue(grid, vertex)):  ## sometimes overwrites black walls as blue...? tf?
+        if (dist < bestDist) and (neighboursBlue(grid, vertex)):  # sometimes overwrites black walls as blue...? tf?
             bestVertex = vertex
             bestDist = dist
 
@@ -227,7 +237,7 @@ def minimumDist(grid, Q, source):
 
 
 def neighboursBlue(grid, V):
-    flag = False;
+    flag = False
     if (V[0] >= squareSize) and (V[1] >= squareSize):
         if ((grid.get_at((V[0] - int(squareSize), V[1] - int(squareSize))))[:3] == start_colour) or \
                 ((grid.get_at((V[0] - int(squareSize), V[1] - int(squareSize))))[:3] == searching_colour):
@@ -267,31 +277,109 @@ def neighboursBlue(grid, V):
 def theBetterFindNeighbours(graph, u):
     neighbours = []
     if (u[0] - squareSize, u[1] - squareSize) in graph:
-        neighbours.append((u[0] - squareSize, u[1] - squareSize));  ##top left
+        neighbours.append((u[0] - squareSize, u[1] - squareSize))  ##top left
     if (u[0], u[1] - squareSize) in graph:
-        neighbours.append((u[0], u[1] - squareSize));  ##top
+        neighbours.append((u[0], u[1] - squareSize)) ##top
     if (u[0] + squareSize, u[1] - squareSize) in graph:
-        neighbours.append((u[0] + squareSize, u[1] - squareSize));  ##top right
+        neighbours.append((u[0] + squareSize, u[1] - squareSize))  ##top right
     if (u[0] - squareSize, u[1]) in graph:
-        neighbours.append((u[0] - squareSize, u[1]));  ##left
+        neighbours.append((u[0] - squareSize, u[1]))  ##left
     if (u[0] + squareSize, u[1]) in graph:
-        neighbours.append((u[0] + squareSize, u[1]));  ##right
+        neighbours.append((u[0] + squareSize, u[1]))  ##right
     if (u[0] - squareSize, u[1] + squareSize) in graph:
         neighbours.append((u[0] - squareSize, u[1] + squareSize))  ##bottom left
     if (u[0], u[1] + squareSize) in graph:
-        neighbours.append((u[0], u[1] + squareSize));  ##bottom
+        neighbours.append((u[0], u[1] + squareSize))  ##bottom
     if (u[0] + squareSize, u[1] + squareSize) in graph:
-        neighbours.append((u[0] + squareSize, u[1] + squareSize));  ##bottom right
+        neighbours.append((u[0] + squareSize, u[1] + squareSize))  ##bottom right
 
     return neighbours
 
-def aStar():
+def diagonalDist(grid1, grid2):
+    dx = abs(grid1[0] - grid2[0]) / 20
+    dy = abs(grid1[1] - grid2[1]) / 20
+
+    diagSquare = math.sqrt(squareSize ** 2 + squareSize ** 2)
+    diagDist = squareSize * (dx + dy) + (diagSquare - 2*squareSize) * min(dx, dy)
+    return diagDist
+
+def aStar(vertices, start, target):#theoretically a combination of gFB and dijkstra
+    toVisit = []
+    explored = []
+
+    gCost = dict()
+    hCost = dict()
+    fCost = dict()
+    prevNode = dict()
+
+    graph = []
+
+    for i in range(0, boardWidth, squareSize):
+        for j in range(0, boardHeight, squareSize):
+            if (vertices.get_at((i, j))[:3] != (0, 0, 0)):
+                graph.append((i, j))
+
+    for vertex in graph:
+        gCost[vertex] = sys.maxsize
+        fCost[vertex] = sys.maxsize
+        #hCost[vertex] = diagonalDist(vertex, target)    #may need this line, maybe not
+
+    toVisit.append(start)
+    gCost[start] = 0
+    hCost[start] = diagonalDist(start, target)
+    fCost[start] = hCost[start] + gCost[start] ##But gCost is always 0 since dist from node A to Node A (start to start) is 0!!
+
+    while len(toVisit)>0:
+        #returns key that has smallest value in the dictionary (but need min element to still be in toVisit!!!!)
+        #currentNode = min(fCost, key=fCost.get)
+
+        minCost = sys.maxsize
+        minNode = start
+        for node in toVisit:
+            if(fCost[node] < minCost):
+                minNode = node
+                minCost = fCost[node]
+
+        currentNode = minNode
+        print("Current Node: ")
+        print(currentNode)
+        toVisit.remove(currentNode)
+        explored.append(currentNode)
+
+        if currentNode == target:
+            break
+
+        neighbours = []
+        neighbours = theBetterFindNeighbours(graph, currentNode)
+        for neighbour in neighbours:
+            if neighbour in explored:
+                pass
+                #skip to next neighbour
+            else:
+                altG = (diagonalDist(currentNode, neighbour) + gCost[currentNode])
+                if (altG < gCost[neighbour]) or (not(neighbour in toVisit)):  #new path to neighbour is shorter
+                    gCost[neighbour] = altG
+                    hCost[neighbour] = diagonalDist(neighbour, target)
+                    fCost[neighbour] = gCost[neighbour] + hCost[neighbour]
+
+                    prevNode[neighbour] = currentNode
+                    if not (neighbour in toVisit):
+                        toVisit.append(neighbour)
+    traceback = []
+    node = target
+    if (prevNode[node] != None) or (node == start):
+        while (node != None):
+            traceback.insert(0, node)
+            node = prevNode[node]
+    return traceback
+
+
+def greedyBestFirst():
     pass
 
-
-def erase(cursor_pos, board):
-    squareX = squareSize * math.floor(cursor_pos[0] / squareSize);
-    squareY = squareSize * math.floor(cursor_pos[1] / squareSize);
+def erase(cursorPos, board):
+    squareX = squareSize * math.floor(cursorPos[0] / squareSize)
+    squareY = squareSize * math.floor(cursorPos[1] / squareSize)
     pygame.draw.rect(board, white, pygame.Rect(squareX, squareY, squareSize, squareSize))
     pygame.draw.lines(board, (95, 0, 0), False, [
         (squareX, squareY),
@@ -299,8 +387,8 @@ def erase(cursor_pos, board):
         (squareX + squareSize, squareY + squareSize),
         (squareX, squareY + squareSize),
         (squareX, squareY)
-    ]);
+    ])
 
 
-update();
-print("Should not get this far");
+update()
+print("Should not get this far")

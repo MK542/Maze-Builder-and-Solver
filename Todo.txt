@@ -1,0 +1,10 @@
+Stuff to be done:
+
+Add A* algo
+Add 1-2 Maze Generator Algo(s)
+Make it look nicer (use CSS / HTML / JS   ?)
+    Remove instructions from the side in bad panel thing (have a question mark that opens a help menu)
+    Add buttons at top to choose different algos instead of having G = Dijkstra, H = A*, etc.
+    Remove the 'Mode Text'
+
+Break project up into different files, rather than all in main.py
